@@ -133,6 +133,7 @@ struct erofs_sb_info {
 	struct list_head list;
 
 	u64 saved_by_deduplication;
+	u8 bcj_flag;
 
 #ifdef EROFS_MT_ENABLED
 	pthread_t dfops_worker;

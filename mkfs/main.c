@@ -84,6 +84,9 @@ static struct option long_options[] = {
 	{"root-xattr-isize", required_argument, NULL, 524},
 	{"mkfs-time", no_argument, NULL, 525},
 	{"all-time", no_argument, NULL, 526},
+	{"bcj-x86",no_argument, NULL, 527},
+	{"bcj-arm",no_argument, NULL, 528},
+	{"bcj-arm64",no_argument, NULL, 529},
 	{0, 0, 0, 0},
 };
 
@@ -840,6 +843,15 @@ static int mkfs_parse_options_cfg(int argc, char *argv[])
 		case 526:
 			cfg.c_timeinherit = TIMESTAMP_FIXED;
 			break;
+		case 527:
+			cfg.c_bcj_flag = 1;
+			break;
+		case 528:
+			cfg.c_bcj_flag = 2;
+			break;
+		case 529:
+			cfg.c_bcj_flag = 3;
+			break;
 		case 'V':
 			version();
 			exit(0);
@@ -1017,6 +1029,7 @@ static void erofs_mkfs_default_options(void)
 	g_sbi.feature_incompat = EROFS_FEATURE_INCOMPAT_ZERO_PADDING;
 	g_sbi.feature_compat = EROFS_FEATURE_COMPAT_SB_CHKSUM |
 			     EROFS_FEATURE_COMPAT_MTIME;
+	cfg.c_bcj_flag = 0;
 }
 
 /* https://reproducible-builds.org/specs/source-date-epoch/ for more details */
@@ -1186,6 +1199,7 @@ int main(int argc, char **argv)
 		g_sbi.build_time      = t.tv_sec;
 		g_sbi.build_time_nsec = t.tv_usec;
 	}
+	g_sbi.bcj_flag = cfg.c_bcj_flag;
 
 	err = erofs_dev_open(&g_sbi, cfg.c_img_path, O_RDWR |
 				(incremental_mode ? 0 : O_TRUNC));

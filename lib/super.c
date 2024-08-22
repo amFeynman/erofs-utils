@@ -123,6 +123,7 @@ int erofs_read_superblock(struct erofs_sb_info *sbi)
 
 	sbi->build_time = le64_to_cpu(dsb->build_time);
 	sbi->build_time_nsec = le32_to_cpu(dsb->build_time_nsec);
+	sbi->bcj_flag = dsb->bcj_flag;
 
 	memcpy(&sbi->uuid, dsb->uuid, sizeof(dsb->uuid));
 
@@ -175,6 +176,7 @@ int erofs_writesb(struct erofs_sb_info *sbi, struct erofs_buffer_head *sb_bh,
 		.extra_devices = cpu_to_le16(sbi->extra_devices),
 		.devt_slotoff = cpu_to_le16(sbi->devt_slotoff),
 		.packed_nid = cpu_to_le64(sbi->packed_nid),
+		.bcj_flag = sbi->bcj_flag,
 	};
 	const u32 sb_blksize = round_up(EROFS_SUPER_END, erofs_blksiz(sbi));
 	char *buf;

@@ -94,6 +94,7 @@ struct erofs_configure {
 	char *fs_config_file;
 	char *block_list_file;
 #endif
+	int c_bcj_flag;
 };
 
 extern struct erofs_configure cfg;
