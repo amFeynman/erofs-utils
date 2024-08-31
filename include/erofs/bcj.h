@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2024 HUAWEI, Inc.
  *             http://www.huawei.com/
- * Created by Bannyan <1215606712@qq.com>
+ * Created by MercyHeart <2384268568@qq.com>
  * Created by Feynman G <gxnorz@gmail.com>
  */
 #ifndef __EROFS_BCJ_H

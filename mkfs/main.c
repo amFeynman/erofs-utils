@@ -84,9 +84,9 @@ static struct option long_options[] = {
 	{"root-xattr-isize", required_argument, NULL, 524},
 	{"mkfs-time", no_argument, NULL, 525},
 	{"all-time", no_argument, NULL, 526},
-	{"bcj-x86",no_argument, NULL, 527},
-	{"bcj-arm",no_argument, NULL, 528},
-	{"bcj-arm64",no_argument, NULL, 529},
+#ifndef __EROFS_BCJ_H
+	{"bcj",required_argument, NULL, 527},
+#endif
 	{0, 0, 0, 0},
 };
 
@@ -214,6 +214,10 @@ static void usage(int argc, char **argv)
 #endif
 #ifdef EROFS_MT_ENABLED
 		, erofs_get_available_processors() /* --workers= */
+#endif
+#ifndef __EROFS_BCJ_H
+		" --bcj=                X=bcj filter for different architectures\n"
+		"                       (X=x86|arm|arm64)\n"
 #endif
 	);
 }
@@ -844,13 +848,17 @@ static int mkfs_parse_options_cfg(int argc, char *argv[])
 			cfg.c_timeinherit = TIMESTAMP_FIXED;
 			break;
 		case 527:
-			cfg.c_bcj_flag = 1;
-			break;
-		case 528:
-			cfg.c_bcj_flag = 2;
-			break;
-		case 529:
-			cfg.c_bcj_flag = 3;
+			erofs_err("bcj_option %s",optarg);
+			if(!strcmp(optarg, "x86"))
+				cfg.c_bcj_flag = 1;
+			else if (!strcmp(optarg, "arm"))
+				cfg.c_bcj_flag = 2;
+			else if (!strcmp(optarg, "arm64"))
+				cfg.c_bcj_flag = 3;
+			else{
+				cfg.c_bcj_flag = 0;
+				erofs_err("invalid bcj filter %s", optarg);
+			}
 			break;
 		case 'V':
 			version();

@@ -49,9 +49,6 @@ static struct option long_options[] = {
 	{"no-preserve-owner", no_argument, 0, 10},
 	{"no-preserve-perms", no_argument, 0, 11},
 	{"offset", required_argument, 0, 12},
-	{"bcj-x86", no_argument, 0, 13},
-	{"bcj-arm", no_argument, 0, 14},
-	{"bcj-arm64", no_argument, 0, 15},
 	{0, 0, 0, 0},
 };
 
@@ -228,15 +225,6 @@ static int erofsfsck_parse_options_cfg(int argc, char **argv)
 				erofs_err("invalid disk offset %s", optarg);
 				return -EINVAL;
 			}
-			break;
-		case 13:
-			cfg.c_bcj_flag = 1;
-			break;
-		case 14:
-			cfg.c_bcj_flag = 2;
-			break;
-		case 15:
-			cfg.c_bcj_flag = 3;
 			break;
 		default:
 			return -EINVAL;
