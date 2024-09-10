@@ -217,7 +217,7 @@ static size_t arm64_code(uint32_t now_pos, bool is_encoder,
 	return i;
 }
 
-int bcj_code(uint8_t* buf,size_t size,int bcj_type,bool is_encode)
+int bcj_code(uint8_t* buf,uint32_t startpos,size_t size,int bcj_type,bool is_encode)
 {
 	size_t processed_size = 0;
 	lzma_simple_x86 simple;
@@ -225,13 +225,13 @@ int bcj_code(uint8_t* buf,size_t size,int bcj_type,bool is_encode)
 	case 1:
 		simple.prev_mask = 0;
 		simple.prev_pos = (uint32_t)(-5);
-		processed_size = x86_code(&simple, 0, is_encode, buf, size);
+		processed_size = x86_code(&simple, startpos, is_encode, buf, size);
 		break;
 	case 2:
-		processed_size = arm_code(0, is_encode, buf, size);
+		processed_size = arm_code(startpos, is_encode, buf, size);
 		break;
 	case 3:
-		processed_size = arm64_code(0, is_encode, buf, size);
+		processed_size = arm64_code(startpos, is_encode, buf, size);
 		break;
 	default:
 		break;
@@ -266,21 +266,22 @@ int erofs_decode_bcj(char* filepath, int bcj_type)
 		return -errno;
 	}
 
-	switch (bcj_type) {
-	case 1:
-		simple.prev_mask = 0;
-		simple.prev_pos = (uint32_t)(0);
-		processed_size = x86_code(&simple, 0, false, buf, size);
-		break;
-	case 2:
-		processed_size = arm_code(0, false, buf, size);
-		break;
-	case 3:
-		processed_size = arm64_code(0, false, buf,size);
-		break;
-	default:
-		break;
-	}
+	bcj_code(buf,0,size,bcj_type,false);
+	// switch (bcj_type) {
+	// case 1:
+	// 	simple.prev_mask = 0;
+	// 	simple.prev_pos = (uint32_t)(0);
+	// 	processed_size = x86_code(&simple, 0, false, buf, size);
+	// 	break;
+	// case 2:
+	// 	processed_size = arm_code(0, false, buf, size);
+	// 	break;
+	// case 3:
+	// 	processed_size = arm64_code(0, false, buf,size);
+	// 	break;
+	// default:
+	// 	break;
+	// }
 
 	lseek(fd, 0, SEEK_SET);
 	if(write(fd, buf, size) < 0){
@@ -302,22 +303,23 @@ int erofs_bcj_read(int fd, void* buf,size_t nbytes, off_t offset)
 			pread(fd, buf, nbytes, offset));
 	if (ret != nbytes)
 		return -errno;
-	switch (cfg.c_bcj_flag)
-	{
-	case 1:
-		simple.prev_mask = 0;
-		simple.prev_pos = (uint32_t)(0);
-		processed_size = x86_code(&simple, 0, true, buffer, nbytes);
-		break;
-	case 2:
-		processed_size = arm_code(0, true, buffer, nbytes);
-		break;
-	case 3:
-		processed_size = arm64_code(0, true, buffer, nbytes);
-		break;
-	default:
-		break;
-	}
+	bcj_code(buffer,0,nbytes,cfg.c_bcj_flag,true);
+	// switch (cfg.c_bcj_flag)
+	// {
+	// case 1:
+	// 	simple.prev_mask = 0;
+	// 	simple.prev_pos = (uint32_t)(0);
+	// 	processed_size = x86_code(&simple, 0, true, buffer, nbytes);
+	// 	break;
+	// case 2:
+	// 	processed_size = arm_code(0, true, buffer, nbytes);
+	// 	break;
+	// case 3:
+	// 	processed_size = arm64_code(0, true, buffer, nbytes);
+	// 	break;
+	// default:
+	// 	break;
+	// }
 	erofs_info("bcj processed_size %lu size %lu\n", processed_size, nbytes);
 	return ret;
 }
