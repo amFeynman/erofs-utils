@@ -15,7 +15,7 @@ extern "C"
 
 int erofs_decode_bcj(char* filepath, int bcj_type);
 int erofs_bcj_read(int fd, void* buf,size_t nbytes, off_t offset);
-int bcj_code(uint8_t* buf,uint32_t startpos,size_t size,int bcj_type,bool is_encode)
+int bcj_code(uint8_t* buf,uint32_t startpos,size_t size,int bcj_type,bool is_encode);
 
 #ifdef __cplusplus
 }

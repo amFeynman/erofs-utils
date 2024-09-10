@@ -1,4 +1,4 @@
-git pull
+# git pull
 make -j48
 make install
 cd ../../
