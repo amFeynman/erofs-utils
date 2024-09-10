@@ -217,6 +217,28 @@ static size_t arm64_code(uint32_t now_pos, bool is_encoder,
 	return i;
 }
 
+int bcj_code(uint8_t* buf,size_t size,int bcj_type,bool is_encode)
+{
+	size_t processed_size = 0;
+	lzma_simple_x86 simple;
+	switch (bcj_type) {
+	case 1:
+		simple.prev_mask = 0;
+		simple.prev_pos = (uint32_t)(-5);
+		processed_size = x86_code(&simple, 0, is_encode, buf, size);
+		break;
+	case 2:
+		processed_size = arm_code(0, is_encode, buf, size);
+		break;
+	case 3:
+		processed_size = arm64_code(0, is_encode, buf, size);
+		break;
+	default:
+		break;
+	}
+	return processed_size;
+}
+
 int erofs_decode_bcj(char* filepath, int bcj_type)
 {
 	size_t processed_size = 0;

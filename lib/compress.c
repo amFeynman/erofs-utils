@@ -545,8 +545,24 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 	}
 
 	e->length = min(len, cfg.c_max_decompressed_extent_bytes);
-	ret = erofs_compress_destsize(h, ctx->queue + ctx->head,
+	if(cfg.c_bcj_flag == 0){
+		//erofs_err("estimate %d",e->length);
+		ret = erofs_compress_destsize(h, ctx->queue + ctx->head,
 				      &e->length, dst, ctx->pclustersize);
+		//erofs_err("compress %d to %d",e->length,ret);
+	}
+	else{
+		//erofs_err("estimate %d",e->length);
+		uint8_t*temp_buffer = (uint8_t*)malloc(e->length);
+		if (!temp_buffer) {
+   		 	return -ENOMEM; // 内存分配失败
+		}
+		memcpy(temp_buffer, ctx->queue + ctx->head, e->length);
+		bcj_code(temp_buffer, (size_t)e->length, cfg.c_bcj_flag, true);
+		ret = erofs_compress_destsize(h, temp_buffer,
+					  &e->length, dst, ctx->pclustersize);
+		//erofs_err("compress %d to %d",e->length,ret);
+	}
 	if (ret <= 0) {
 		erofs_err("failed to compress %s: %s", inode->i_srcpath,
 			  erofs_strerror(ret));
@@ -702,7 +718,7 @@ static int z_erofs_compress_one(struct z_erofs_compress_sctx *ctx)
 		ei = malloc(sizeof(*ei));
 		if (!ei)
 			return -ENOMEM;
-
+		
 		init_list_head(&ei->list);
 		ret = __z_erofs_compress_one(ctx, &ei->e);
 		if (ret) {
@@ -1013,17 +1029,17 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
 		const u64 rx = min_t(u64, ctx->remaining,
 				     Z_EROFS_COMPR_QUEUE_SZ - ctx->tail);
 		int ret;
-		if (cfg.c_bcj_flag == 0) {
+		//if (cfg.c_bcj_flag == 0) {
 			ret = (offset == -1 ?
 				read(fd, ctx->queue + ctx->tail, rx) :
 				pread(fd, ctx->queue + ctx->tail, rx,
 					ictx->fpos + offset));
-		} else {
-			ret = (offset == -1 ?
-				erofs_bcj_read(fd, ctx->queue + ctx->tail, rx, -1):
-				erofs_bcj_read(fd, ctx->queue + ctx->tail, rx,
-					ictx->fpos + offset));
-		}
+		// } else {
+		// 	ret = (offset == -1 ?
+		// 		erofs_bcj_read(fd, ctx->queue + ctx->tail, rx, -1):
+		// 		erofs_bcj_read(fd, ctx->queue + ctx->tail, rx,
+		// 			ictx->fpos + offset));
+		// }
 		if (ret != rx)
 			return -errno;
 
