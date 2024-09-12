@@ -545,32 +545,28 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 	}
 
 	e->length = min(len, cfg.c_max_decompressed_extent_bytes);
-	//bcj test
+
 	if(cfg.c_bcj_flag == 0){
-		erofs_err("e->length = %d",e->length);
 		ret = erofs_compress_destsize(h, ctx->queue + ctx->head,
 				      &e->length, dst, ctx->pclustersize);
-		erofs_err("compressed %d into %d",e->length,ret);
 	}
 	else{
-		erofs_err("e->length = %d",e->length);
-		size_t temp_size = &e->length;
+		unsigned int temp_size = e->length;
 		ret = erofs_compress_destsize(h, ctx->queue + ctx->head,
 				      &temp_size, dst, ctx->pclustersize);
 		if(cfg.c_bcj_flag == 1){//for x86
 
 		}
 		else if(cfg.c_bcj_flag == 2 || cfg.c_bcj_flag == 3){//arm and arm 64
-			if(temp_size % 4 != 0){
+			if(temp_size % 4 != 0 && temp_size != e->length){
 				temp_size -= temp_size % 4;
 				ret = erofs_compress_destsize(h, ctx->queue + ctx->head,
 				      &temp_size, dst, ctx->pclustersize);
-				e->length = temp_size;
 			}
 		}
-		erofs_err("compressed %d into %d",e->length,ret);
+		e->length = temp_size;
 	}
-	//bcj test
+
 	if (ret <= 0) {
 		erofs_err("failed to compress %s: %s", inode->i_srcpath,
 			  erofs_strerror(ret));
@@ -596,6 +592,10 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 nocompression:
 			/* TODO: reset clusterofs to 0 if permitted */
 			ret = write_uncompressed_extent(ctx, len, dst);
+			if(sbi->bcj_flag){
+				erofs_err("one block nocompression %d",ret);
+				bcj_code((uint8_t *)dst,0,(size_t)ret,sbi->bcj_flag,false);
+			}
 			if (ret < 0)
 				return ret;
 		}
@@ -716,7 +716,7 @@ static int z_erofs_compress_one(struct z_erofs_compress_sctx *ctx)
 
 	while (len) {
 		int ret = z_erofs_compress_dedupe(ctx, &len);
-
+		
 		if (ret > 0)
 			break;
 		else if (ret < 0)

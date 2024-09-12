@@ -283,13 +283,13 @@ int erofs_decode_bcj(char* filepath, int bcj_type)
 	// 	break;
 	// }
 
-	lseek(fd, 0, SEEK_SET);
-	if(write(fd, buf, size) < 0){
-		erofs_err("fail to writeback, processed_size %lu\n", processed_size);
-		close(fd);
-		return -errno;
-	}
-	close(fd);
+	// lseek(fd, 0, SEEK_SET);
+	// if(write(fd, buf, size) < 0){
+	// 	erofs_err("fail to writeback, processed_size %lu\n", processed_size);
+	// 	close(fd);
+	// 	return -errno;
+	// }
+	// close(fd);
 	return 0;
 }
 
@@ -320,6 +320,6 @@ int erofs_bcj_read(int fd, void* buf,size_t nbytes, off_t offset)
 	// default:
 	// 	break;
 	// }
-	erofs_info("bcj processed_size %lu size %lu\n", processed_size, nbytes);
-	return ret;
+	// erofs_info("bcj processed_size %lu size %lu\n", processed_size, nbytes);
+	// return ret;
 }

@@ -8,6 +8,7 @@
 #include "erofs/internal.h"
 #include "erofs/trace.h"
 #include "erofs/decompress.h"
+#include "erofs/bcj.h"
 
 static int erofs_map_blocks_flatmode(struct erofs_inode *inode,
 				     struct erofs_map_blocks *map,
@@ -238,7 +239,7 @@ int z_erofs_read_one_data(struct erofs_inode *inode,
 	struct erofs_sb_info *sbi = inode->sbi;
 	struct erofs_map_dev mdev;
 	int ret = 0;
-
+	
 	if (map->m_flags & EROFS_MAP_FRAGMENT) {
 		struct erofs_inode packed_inode = {
 			.sbi = sbi,
@@ -286,6 +287,9 @@ int z_erofs_read_one_data(struct erofs_inode *inode,
 			 });
 	if (ret < 0)
 		return ret;
+	if(sbi->bcj_flag){
+		bcj_code((uint8_t *)buffer,(uint32_t)skip,(size_t)length,sbi->bcj_flag,false);
+	}
 	return 0;
 }
 
