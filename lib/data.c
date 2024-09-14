@@ -287,6 +287,7 @@ int z_erofs_read_one_data(struct erofs_inode *inode,
 			 });
 	if (ret < 0)
 		return ret;
+	erofs_err("z_erofs_decompress %d",rq->decodedlength);
 	return 0;
 }
 

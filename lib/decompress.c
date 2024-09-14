@@ -507,7 +507,7 @@ out:
 int z_erofs_decompress(struct z_erofs_decompress_req *rq)
 {
 	struct erofs_sb_info *sbi = rq->sbi;
-	erofs_err("z_erofs_decompress %d",rq->decodedlength);
+	
 	if (rq->alg == Z_EROFS_COMPRESSION_INTERLACED) {
 		unsigned int count, rightpart, skip;
 
