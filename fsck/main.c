@@ -521,10 +521,13 @@ static int erofs_verify_inode_data(struct erofs_inode *inode, int outfd)
 			}
 			ret = z_erofs_read_one_data(inode, &map, raw, buffer,
 						    0, map.m_llen, false);
-			erofs_err("decompressed %d",map.m_llen);
-			if(cfg.c_bcj_flag){
+			if(cfg.c_bcj_flag && map.m_plen != map.m_llen){
 				bcj_code((uint8_t *)buffer,0,(size_t)map.m_llen,cfg.c_bcj_flag,false);
+				erofs_err("decompressed %d",map.m_llen);
+			}else if(cfg.c_bcj_flag && map.m_plen == map.m_llen){
+				erofs_err("nocompress %d",map.m_llen);
 			}
+
 			if (ret)
 				goto out;
 
@@ -709,9 +712,9 @@ again:
 	/* verify data chunk layout */
 	ret = erofs_verify_inode_data(inode, fd);
 	close(fd);
-	if(g_sbi.bcj_flag != 0)
-		erofs_err("hello");
-		ret = erofs_bcj_filedecode(fsckcfg.extract_path, g_sbi.bcj_flag);
+	// if(g_sbi.bcj_flag != 0)
+	// 	erofs_err("hello");
+	// 	ret = erofs_bcj_filedecode(fsckcfg.extract_path, g_sbi.bcj_flag);
 	return ret;
 }
 
