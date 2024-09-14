@@ -1070,10 +1070,12 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
         		erofs_err("bcjread malloc failed");
         		return -errno;
     		}
-			ret = (offset == -1 ?
-				erofs_bcj_fileread(fd, ctx->bcjdata, rx, -1):
-				erofs_bcj_fileread(fd, ctx->bcjdata, rx,
-			 		ictx->fpos + offset));
+			memcpy(ctx->bcjdata,ctx->queue + ctx->tail,rx);
+			bcj_code((uint8_t *)ctx->bcjdata,0,(size_t)rx,cfg.c_bcj_flag,true);
+			// ret = (offset == -1 ?
+			// 	erofs_bcj_fileread(fd, ctx->bcjdata, rx, -1):
+			// 	erofs_bcj_fileread(fd, ctx->bcjdata, rx,
+			//  		ictx->fpos + offset));
 		}
 
 		if (ret != rx)
