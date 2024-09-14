@@ -756,6 +756,7 @@ static int z_erofs_compress_one(struct z_erofs_compress_sctx *ctx)
 				break;		/* need more data */
 			return ret;
 		}
+		erofs_err("enter __z_erofs_compress_one");
 
 		len -= ei->e.length;
 		ctx->pivot = ei;
@@ -1073,7 +1074,6 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
 				erofs_bcj_fileread(fd, ctx->bcjdata, rx, -1):
 				erofs_bcj_fileread(fd, ctx->bcjdata, rx,
 			 		ictx->fpos + offset));
-			erofs_err("print bcjdata size = %d",rx);
 		}
 
 		if (ret != rx)
@@ -1085,6 +1085,7 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
 			offset += rx;
 
 		ret = z_erofs_compress_one(ctx);
+		erofs_err("print bcjdata size = %d",rx);
 		free(ctx->bcjdata);
 		ctx->bcjdata = NULL;
 		if (ret)
