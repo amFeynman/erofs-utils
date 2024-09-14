@@ -234,6 +234,7 @@ int bcj_code(uint8_t* buf,uint32_t startpos,size_t size,int bcj_type,bool is_enc
 		processed_size = arm64_code(startpos, is_encode, buf, size);
 		break;
 	default:
+		erofs_err("bad bcjcode flag");
 		break;
 	}
 	return processed_size;
