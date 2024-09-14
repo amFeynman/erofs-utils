@@ -563,6 +563,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 			}
 		}
 		erofs_err("bcj compress %d into %d,len = %d",temp_size,ret,len);
+		erofs_err()
 		e->length = temp_size;
 	}
 	else{
@@ -586,10 +587,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 		if (may_inline && len < blksz) {
 			ret = z_erofs_fill_inline_data(inode,
 					ctx->queue + ctx->head, len, true);
-			// if(sbi->bcj_flag){
 			erofs_err("nocempression inline processing %d",ret);
-			// 	bcj_code((uint8_t *)inode->idata,0,(size_t)ret,sbi->bcj_flag,false);
-			// }
 			if (ret < 0)
 				return ret;
 			e->inlined = true;
@@ -599,10 +597,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 nocompression:
 			/* TODO: reset clusterofs to 0 if permitted */
 			ret = write_uncompressed_extent(ctx, len, dst);
-			// if(sbi->bcj_flag){
 			erofs_err("one block nocompression %d",ret);
-			// 	bcj_code((uint8_t *)dst,0,(size_t)ret,sbi->bcj_flag,false);
-			// }
 			if (ret < 0)
 				return ret;
 		}
@@ -633,12 +628,7 @@ frag_packing:
 			inode->eof_tailraw = malloc(len);
 			if (!inode->eof_tailraw)
 				return -ENOMEM;
-
 			memcpy(inode->eof_tailraw, ctx->queue + ctx->head, len);
-			// if(sbi->bcj_flag){
-			// 	erofs_err("compressed inlined %d",ret);
-			// 	bcj_code((uint8_t *)inode->eof_tailraw,0,(size_t)ret,sbi->bcj_flag,false);
-			// }
 			inode->eof_tailrawsize = len;
 		}
 
@@ -666,12 +656,12 @@ frag_packing:
 		}
 
 		if (may_inline && len == e->length){
-			if(cfg.c_bcj_flag == 0){
-				tryrecompress_trailing(ctx, h, ctx->queue + ctx->head,
+			if(cfg.c_bcj_flag){
+				tryrecompress_trailing(ctx, h, ctx->bcjdata + ctx->head,
 						&e->length, dst, &compressedsize);
 			}
 			else{
-				tryrecompress_trailing(ctx, h, ctx->bcjdata,
+				tryrecompress_trailing(ctx, h, ctx->queue + ctx->head,
 						&e->length, dst, &compressedsize);
 			}
 		}
