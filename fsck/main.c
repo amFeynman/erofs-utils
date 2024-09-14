@@ -414,6 +414,7 @@ out:
 
 static int erofs_verify_inode_data(struct erofs_inode *inode, int outfd)
 {
+	erofs_err("nid = %d",inode->nid);
 	struct erofs_map_blocks map = {
 		.index = UINT_MAX,
 	};

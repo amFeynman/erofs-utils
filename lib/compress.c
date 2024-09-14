@@ -564,6 +564,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 				      &temp_size, dst, ctx->pclustersize);
 			}
 		}
+		erofs_err("compress %d into %d,len = %d",temp_size,ret,len);
 		e->length = temp_size;
 	}
 
@@ -583,6 +584,10 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 		if (may_inline && len < blksz) {
 			ret = z_erofs_fill_inline_data(inode,
 					ctx->queue + ctx->head, len, true);
+			if(sbi->bcj_flag){
+				erofs_err("nocempression inline processing %d",ret);
+				bcj_code((uint8_t *)inode->idata,0,(size_t)ret,sbi->bcj_flag,false);
+			}
 			if (ret < 0)
 				return ret;
 			e->inlined = true;
@@ -614,6 +619,7 @@ nocompression:
 frag_packing:
 		ret = z_erofs_pack_fragments(inode, ctx->queue + ctx->head,
 					     len, ictx->tof_chksum);
+		erofs_err("erofs frag_packing len = %d,ret = %d",len,ret);
 		if (ret < 0)
 			return ret;
 		e->compressedblks = 0; /* indicate a fragment */
