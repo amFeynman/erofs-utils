@@ -550,7 +550,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 
 	if(cfg.c_bcj_flag){
 		unsigned int temp_size = e->length;
-		ret = erofs_compress_destsize(h, ctx->bcjdata,
+		ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->head,
 				      &temp_size, dst, ctx->pclustersize);
 		if(cfg.c_bcj_flag == 1){//for x86
 
@@ -568,7 +568,6 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 	else{
 		ret = erofs_compress_destsize(h, ctx->queue + ctx->head,
 				      &e->length, dst, ctx->pclustersize);
-		erofs_err("compress %d into %d,len = %d",e->length,ret,len);
 	}
 
 	if (ret <= 0) {
@@ -756,7 +755,6 @@ static int z_erofs_compress_one(struct z_erofs_compress_sctx *ctx)
 				break;		/* need more data */
 			return ret;
 		}
-		erofs_err("enter __z_erofs_compress_one");
 
 		len -= ei->e.length;
 		ctx->pivot = ei;
