@@ -707,7 +707,7 @@ again:
 	close(fd);
 	// if(g_sbi.bcj_flag != 0)
 	// 	erofs_err("hello");
-	// 	ret = erofs_decode_bcj(fsckcfg.extract_path, g_sbi.bcj_flag);
+	// 	ret = erofs_bcj_filedecode(fsckcfg.extract_path, g_sbi.bcj_flag);
 	return ret;
 }
 

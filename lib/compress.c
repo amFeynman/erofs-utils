@@ -1050,8 +1050,8 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
 					ictx->fpos + offset));
 		} else {
 			ret = (offset == -1 ?
-				erofs_bcj_read(fd, ctx->queue + ctx->tail, rx, -1):
-				erofs_bcj_read(fd, ctx->queue + ctx->tail, rx,
+				erofs_bcj_fileread(fd, ctx->queue + ctx->tail, rx, -1):
+				erofs_bcj_fileread(fd, ctx->queue + ctx->tail, rx,
 					ictx->fpos + offset));
 		}
 		if (ret != rx)

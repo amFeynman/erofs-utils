@@ -13,6 +13,8 @@ typedef struct {
 	uint32_t prev_pos;
 } lzma_simple_x86;
 
+
+
 static size_t
 x86_code(void *simple_ptr, uint32_t now_pos, bool is_encoder,
 		uint8_t *buffer, size_t size)
@@ -239,7 +241,7 @@ int bcj_code(uint8_t* buf,uint32_t startpos,size_t size,int bcj_type,bool is_enc
 	return processed_size;
 }
 
-int erofs_decode_bcj(char* filepath, int bcj_type)
+int erofs_bcj_filedecode(char* filepath, int bcj_type)
 {
 	size_t processed_size = 0;
 	lzma_simple_x86 simple;
@@ -293,7 +295,7 @@ int erofs_decode_bcj(char* filepath, int bcj_type)
 	return 0;
 }
 
-int erofs_bcj_read(int fd, void* buf,size_t nbytes, off_t offset)
+int erofs_bcj_fileread(int fd, void* buf,size_t nbytes, off_t offset)
 {
 	uint8_t* buffer = (uint8_t *) buf;
 	lzma_simple_x86 simple;
