@@ -242,7 +242,6 @@ int bcj_code(uint8_t* buf,uint32_t startpos,size_t size,int bcj_type,bool is_enc
 int erofs_bcj_filedecode(char* filepath, int bcj_type)
 {
 	size_t processed_size = 0;
-	lzma_simple_x86 simple;
 	struct stat st;
 	size_t size;
 	uint8_t* buf = NULL;
@@ -266,20 +265,19 @@ int erofs_bcj_filedecode(char* filepath, int bcj_type)
 		return -errno;
 	}
 
-	bcj_code(buf,0,size,bcj_type,false);
+	processed_size = bcj_code(buf,0,size,bcj_type,false);
 	return 0;
 }
 
 int erofs_bcj_fileread(int fd, void* buf,size_t nbytes, off_t offset)
 {
 	uint8_t* buffer = (uint8_t *) buf;
-	lzma_simple_x86 simple;
 	size_t processed_size = 0;
 	int ret = (offset == -1 ?
 			read(fd, buf, nbytes):
 			pread(fd, buf, nbytes, offset));
 	if (ret != nbytes)
 		return -errno;
-	bcj_code(buffer,0,nbytes,cfg.c_bcj_flag,true);
+	processed_size = bcj_code(buffer,0,nbytes,cfg.c_bcj_flag,true);
 	return ret;
 }

@@ -705,9 +705,9 @@ again:
 	/* verify data chunk layout */
 	ret = erofs_verify_inode_data(inode, fd);
 	close(fd);
-	// if(g_sbi.bcj_flag != 0)
-	// 	erofs_err("hello");
-	// 	ret = erofs_bcj_filedecode(fsckcfg.extract_path, g_sbi.bcj_flag);
+	if(g_sbi.bcj_flag != 0)
+		erofs_err("hello");
+		ret = erofs_bcj_filedecode(fsckcfg.extract_path, g_sbi.bcj_flag);
 	return ret;
 }
 

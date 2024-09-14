@@ -287,10 +287,6 @@ int z_erofs_read_one_data(struct erofs_inode *inode,
 			 });
 	if (ret < 0)
 		return ret;
-	if(sbi->bcj_flag){
-		bcj_code((uint8_t *)buffer,(uint32_t)skip,(size_t)length,sbi->bcj_flag,false);
-	}
-	erofs_err("length = %d,m_plen = %d",length,map->m_plen);
 	return 0;
 }
 
