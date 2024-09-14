@@ -524,11 +524,11 @@ static int erofs_verify_inode_data(struct erofs_inode *inode, int outfd)
 			if(g_sbi.bcj_flag && map.m_plen != map.m_llen){
 				erofs_err("bcj decode %d",map.m_llen);
 				erofs_err("first 16 bytes : %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
-					*buffer,*(buffer+1),*(buffer+2),*(buffer+3),*(buffer+4),
-					*(buffer+5),*(buffer+6),*(buffer+7),*(buffer+8),*(buffer+9),
-					*(buffer+10),*(buffer+11),*(buffer+12),*(buffer+13),*(buffer+14),
-					*(buffer+15));
-				int x = bcj_code((uint8_t *)buffer,0,(size_t)map.m_llen,g_sbi.bcj_flag,false);
+					(u8)*buffer,(u8)*(buffer+1),(u8)*(buffer+2),(u8)*(buffer+3),(u8)*(buffer+4),
+					(u8)*(buffer+5),(u8)*(buffer+6),(u8)*(buffer+7),(u8)*(buffer+8),(u8)*(buffer+9),
+					(u8)*(buffer+10),(u8)*(buffer+11),(u8)*(buffer+12),(u8)*(buffer+13),(u8)*(buffer+14),
+					(u8)*(buffer+15));
+				bcj_code((uint8_t *)buffer,0,(size_t)map.m_llen,g_sbi.bcj_flag,false);
 			}else if(g_sbi.bcj_flag && map.m_plen == map.m_llen){
 				erofs_err("nocompress %d",map.m_llen);
 			}
