@@ -13,8 +13,6 @@ typedef struct {
 	uint32_t prev_pos;
 } lzma_simple_x86;
 
-
-
 static size_t
 x86_code(void *simple_ptr, uint32_t now_pos, bool is_encoder,
 		uint8_t *buffer, size_t size)
@@ -269,29 +267,6 @@ int erofs_bcj_filedecode(char* filepath, int bcj_type)
 	}
 
 	bcj_code(buf,0,size,bcj_type,false);
-	// switch (bcj_type) {
-	// case 1:
-	// 	simple.prev_mask = 0;
-	// 	simple.prev_pos = (uint32_t)(0);
-	// 	processed_size = x86_code(&simple, 0, false, buf, size);
-	// 	break;
-	// case 2:
-	// 	processed_size = arm_code(0, false, buf, size);
-	// 	break;
-	// case 3:
-	// 	processed_size = arm64_code(0, false, buf,size);
-	// 	break;
-	// default:
-	// 	break;
-	// }
-
-	// lseek(fd, 0, SEEK_SET);
-	// if(write(fd, buf, size) < 0){
-	// 	erofs_err("fail to writeback, processed_size %lu\n", processed_size);
-	// 	close(fd);
-	// 	return -errno;
-	// }
-	// close(fd);
 	return 0;
 }
 
@@ -306,22 +281,5 @@ int erofs_bcj_fileread(int fd, void* buf,size_t nbytes, off_t offset)
 	if (ret != nbytes)
 		return -errno;
 	bcj_code(buffer,0,nbytes,cfg.c_bcj_flag,true);
-	// switch (cfg.c_bcj_flag)
-	// {
-	// case 1:
-	// 	simple.prev_mask = 0;
-	// 	simple.prev_pos = (uint32_t)(0);
-	// 	processed_size = x86_code(&simple, 0, true, buffer, nbytes);
-	// 	break;
-	// case 2:
-	// 	processed_size = arm_code(0, true, buffer, nbytes);
-	// 	break;
-	// case 3:
-	// 	processed_size = arm64_code(0, true, buffer, nbytes);
-	// 	break;
-	// default:
-	// 	break;
-	// }
-	// erofs_info("bcj processed_size %lu size %lu\n", processed_size, nbytes);
-	// return ret;
+	return ret;
 }

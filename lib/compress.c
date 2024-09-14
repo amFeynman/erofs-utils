@@ -633,6 +633,10 @@ frag_packing:
 				return -ENOMEM;
 
 			memcpy(inode->eof_tailraw, ctx->queue + ctx->head, len);
+			if(sbi->bcj_flag){
+				erofs_err("compressed inlined %d",ret);
+				bcj_code((uint8_t *)inode->eof_tailraw,0,(size_t)ret,sbi->bcj_flag,false);
+			}
 			inode->eof_tailrawsize = len;
 		}
 
@@ -660,9 +664,10 @@ frag_packing:
 		}
 
 		if (may_inline && len == e->length)
-			tryrecompress_trailing(ctx, h, ctx->queue + ctx->head,
+		{	tryrecompress_trailing(ctx, h, ctx->queue + ctx->head,
 					&e->length, dst, &compressedsize);
-
+			erofs_err("recompress %d into %d",e->length,compressedsize);
+		}		
 		e->compressedblks = BLK_ROUND_UP(sbi, compressedsize);
 		DBG_BUGON(e->compressedblks * blksz >= e->length);
 
@@ -708,6 +713,7 @@ frag_packing:
 	return 0;
 
 fix_dedupedfrag:
+	erofs_err("fix_dedupedfrag");
 	DBG_BUGON(!inode->fragment_size);
 	ctx->remaining += inode->fragment_size;
 	ictx->fix_dedupedfrag = true;
