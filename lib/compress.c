@@ -568,7 +568,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 	else{
 		ret = erofs_compress_destsize(h, ctx->queue + ctx->head,
 				      &e->length, dst, ctx->pclustersize);
-		erofs_err("compress %d into %d,len = %d",temp_size,ret,len);
+		erofs_err("compress %d into %d,len = %d",e->length,ret,len);
 	}
 
 	if (ret <= 0) {
