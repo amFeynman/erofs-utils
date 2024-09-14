@@ -848,7 +848,6 @@ static int mkfs_parse_options_cfg(int argc, char *argv[])
 			cfg.c_timeinherit = TIMESTAMP_FIXED;
 			break;
 		case 527:
-			erofs_err("bcj_option %s",optarg);
 			if(!strcmp(optarg, "x86"))
 				cfg.c_bcj_flag = 1;
 			else if (!strcmp(optarg, "arm"))

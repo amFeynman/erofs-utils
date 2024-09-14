@@ -548,11 +548,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 
 	e->length = min(len, cfg.c_max_decompressed_extent_bytes);
 
-	if(cfg.c_bcj_flag == 0){
-		ret = erofs_compress_destsize(h, ctx->queue + ctx->head,
-				      &e->length, dst, ctx->pclustersize);
-	}
-	else{
+	if(cfg.c_bcj_flag){
 		unsigned int temp_size = e->length;
 		ret = erofs_compress_destsize(h, ctx->bcjdata,
 				      &temp_size, dst, ctx->pclustersize);
@@ -568,6 +564,10 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 		}
 		erofs_err("compress %d into %d,len = %d",temp_size,ret,len);
 		e->length = temp_size;
+	}
+	else{
+		ret = erofs_compress_destsize(h, ctx->queue + ctx->head,
+				      &e->length, dst, ctx->pclustersize);
 	}
 
 	if (ret <= 0) {
