@@ -563,6 +563,9 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 			}
 		}
 		erofs_err("bcj compress %d into %d,len = %d",temp_size,ret,len);
+		if(temp_size == 6592){
+			erofs_err("test data: %s",ctx->bcjdata + ctx->head);
+		}
 		e->length = temp_size;
 	}
 	else{
