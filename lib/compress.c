@@ -563,11 +563,6 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 			}
 		}
 		erofs_err("bcj compress %d into %d,len = %d",temp_size,ret,len);
-		erofs_err("first 16 bytes : %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
-					*(ctx->queue + ctx->head),*(ctx->queue + ctx->head+1),*(ctx->queue + ctx->head+2),*(ctx->queue + ctx->head+3),*(ctx->queue + ctx->head+4),
-					*(ctx->queue + ctx->head+5),*(ctx->queue + ctx->head+6),*(ctx->queue + ctx->head+7),*(ctx->queue + ctx->head+8),*(ctx->queue + ctx->head+9),
-					*(ctx->queue + ctx->head+10),*(ctx->queue + ctx->head+11),*(ctx->queue + ctx->head+12),*(ctx->queue + ctx->head+13),*(ctx->queue + ctx->head+14),
-					*(ctx->queue + ctx->head+15));
 		e->length = temp_size;
 	}
 	else{
@@ -601,6 +596,11 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 nocompression:
 			/* TODO: reset clusterofs to 0 if permitted */
 			ret = write_uncompressed_extent(ctx, len, dst);
+			erofs_err("first 16 bytes : %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+					*(ctx->queue + ctx->head),*(ctx->queue + ctx->head+1),*(ctx->queue + ctx->head+2),*(ctx->queue + ctx->head+3),*(ctx->queue + ctx->head+4),
+					*(ctx->queue + ctx->head+5),*(ctx->queue + ctx->head+6),*(ctx->queue + ctx->head+7),*(ctx->queue + ctx->head+8),*(ctx->queue + ctx->head+9),
+					*(ctx->queue + ctx->head+10),*(ctx->queue + ctx->head+11),*(ctx->queue + ctx->head+12),*(ctx->queue + ctx->head+13),*(ctx->queue + ctx->head+14),
+					*(ctx->queue + ctx->head+15));
 			erofs_err("one block nocompression %d",ret);
 			if (ret < 0)
 				return ret;
