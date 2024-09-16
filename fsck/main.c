@@ -526,11 +526,10 @@ static int erofs_verify_inode_data(struct erofs_inode *inode, int outfd)
 				erofs_err("bcj decode %d",map.m_llen);
 			}else if(g_sbi.bcj_flag && map.m_plen == map.m_llen){
 				erofs_err("nocompress %d",map.m_llen);
-				erofs_err("first 16 bytes : %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
-					(u8)*buffer,(u8)*(buffer+1),(u8)*(buffer+2),(u8)*(buffer+3),(u8)*(buffer+4),
-					(u8)*(buffer+5),(u8)*(buffer+6),(u8)*(buffer+7),(u8)*(buffer+8),(u8)*(buffer+9),
-					(u8)*(buffer+10),(u8)*(buffer+11),(u8)*(buffer+12),(u8)*(buffer+13),(u8)*(buffer+14),
-					(u8)*(buffer+15));
+				for(int i = 4000;i < 4096;i + = 4)
+				{
+					erofs_err("%s %s %s %s",(u8)*(buffer + i),(u8)*(buffer + i + 1),(u8)*(buffer + i + 2),(u8)*(buffer + i + 3));
+				}
 			}
 
 			if (ret)
