@@ -597,7 +597,7 @@ nocompression:
 			/* TODO: reset clusterofs to 0 if permitted */
 			ret = write_uncompressed_extent(ctx, len, dst);
 			erofs_err("one block nocompression %d",ret);
-			for(int i = 4000;i < 4096;i + = 4)
+			for(int i = 4000;i < 4096;i += 4)
 				{
 					erofs_err("%s %s %s %s",(u8)*(ctx->queue + ctx->head + i),(u8)*(ctx->queue + ctx->head + i + 1),(u8)*(ctx->queue + ctx->head + i + 2),(u8)*(ctx->queue + ctx->head + i + 3));
 				}
