@@ -598,7 +598,7 @@ nocompression:
 			ret = write_uncompressed_extent(ctx, len, dst);
 			erofs_err("one block nocompression %d",ret);
 			char* temp = dst;
-			for(int i = 1;i<=4096;i++){
+			for(int i = 1;i<=8;i++){
 					erofs_err("%d",*(temp+i));
 				}
 			if (ret < 0)
