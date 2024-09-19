@@ -11,10 +11,4 @@ md5sum arm64test/*
 md5sum out/*
 rm -rf out
 
-mkfs.erofs  arm64_lzma_4k_test.img ./arm64test/
-fsck.erofs --extract=out arm64_lzma_4k_test.img
-md5sum arm64test/*
-md5sum out/*
-rm -rf out
-
 cd 0.src/erofs-utils-x
