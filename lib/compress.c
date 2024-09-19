@@ -595,12 +595,12 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 			may_packing = false;
 nocompression:
 			/* TODO: reset clusterofs to 0 if permitted */
+			for(int i = 4076;i < 4096;i += 4)
+			{
+				erofs_err("%s %s %s %s",(u8)*(ctx->queue + ctx->head + i),(u8)*(ctx->queue + ctx->head + i + 1),(u8)*(ctx->queue + ctx->head + i + 2),(u8)*(ctx->queue + ctx->head + i + 3));
+			}
 			ret = write_uncompressed_extent(ctx, len, dst);
 			erofs_err("one block nocompression %d",ret);
-			for(int i = ret - 20;i < ret;i += 4)
-			{
-				erofs_err("%s %s %s %s",(u8)*(dst + i),(u8)*(dst + i + 1),(u8)*(dst + i + 2),(u8)*(dst + i + 3));
-			}
 			erofs_err("nocompress %d",map.m_llen);
 			if (ret < 0)
 				return ret;
