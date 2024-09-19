@@ -526,10 +526,6 @@ static int erofs_verify_inode_data(struct erofs_inode *inode, int outfd)
 				erofs_err("bcj decode %d",map.m_llen);
 			}else if(g_sbi.bcj_flag && map.m_plen == map.m_llen){
 				erofs_err("nocompress %d",map.m_llen);
-				for(int i = 4076;i < 4096;i += 4)
-				{
-					erofs_err("%s %s %s %s",(u8)*(buffer + i),(u8)*(buffer + i + 1),(u8)*(buffer + i + 2),(u8)*(buffer + i + 3));
-				}
 			}
 
 			if (ret)
