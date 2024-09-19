@@ -526,7 +526,9 @@ static int erofs_verify_inode_data(struct erofs_inode *inode, int outfd)
 			}else if(g_sbi.bcj_flag && map.m_plen == map.m_llen){
 				erofs_err("nocompress %d",map.m_llen);
 				char* temp = buffer;
-				erofs_err("%d",*(temp+4096));
+				for(int i = 1;i<=4096;i++){
+					erofs_err("%d",*(temp+i));
+				}
 			}
 
 			if (ret)
