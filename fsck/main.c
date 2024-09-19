@@ -414,7 +414,6 @@ out:
 
 static int erofs_verify_inode_data(struct erofs_inode *inode, int outfd)
 {
-	erofs_err("nid = %d",inode->nid);
 	struct erofs_map_blocks map = {
 		.index = UINT_MAX,
 	};
@@ -522,8 +521,8 @@ static int erofs_verify_inode_data(struct erofs_inode *inode, int outfd)
 			ret = z_erofs_read_one_data(inode, &map, raw, buffer,
 						    0, map.m_llen, false);
 			if(g_sbi.bcj_flag && map.m_plen != map.m_llen){
-				bcj_code((uint8_t *)buffer,0,(size_t)map.m_llen,g_sbi.bcj_flag,false);
-				erofs_err("bcj decode %d",map.m_llen);
+				int x = bcj_code((uint8_t *)buffer,0,(size_t)map.m_llen,g_sbi.bcj_flag,false);
+				erofs_err("bcj decode %d,bcjflag = %d,processed %d",map.m_llen,g_sbi.bcj_flag,x);
 			}else if(g_sbi.bcj_flag && map.m_plen == map.m_llen){
 				erofs_err("nocompress %d",map.m_llen);
 			}
@@ -712,8 +711,8 @@ again:
 	/* verify data chunk layout */
 	ret = erofs_verify_inode_data(inode, fd);
 	close(fd);
-	// if(g_sbi.bcj_flag != 0)
-	// 	erofs_err("hello");
+	if(g_sbi.bcj_flag != 0)
+		erofs_err("hello");
 	// 	ret = erofs_bcj_filedecode(fsckcfg.extract_path, g_sbi.bcj_flag);
 	return ret;
 }

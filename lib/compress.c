@@ -1074,7 +1074,6 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
 			offset += rx;
 
 		ret = z_erofs_compress_one(ctx);
-		erofs_err("print bcjdata size = %d",rx);
 		free(ctx->bcjdata);
 		ctx->bcjdata = NULL;
 		if (ret)
