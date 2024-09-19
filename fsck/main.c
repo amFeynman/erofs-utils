@@ -521,14 +521,22 @@ static int erofs_verify_inode_data(struct erofs_inode *inode, int outfd)
 			ret = z_erofs_read_one_data(inode, &map, raw, buffer,
 						    0, map.m_llen, false);
 			if(g_sbi.bcj_flag && map.m_plen != map.m_llen){
+				if(map.m_llen == 7440){
+					char* temp = buffer;
+					for(int i = map.m_llen - 16;i<map.m_llen;i++){
+						erofs_err("%d",*(temp+i));
+					}
+				}
 				int x = bcj_code((uint8_t *)buffer,0,(size_t)map.m_llen,g_sbi.bcj_flag,false);
+				if(map.m_llen == 7440){
+					char* temp = buffer;
+					for(int i = map.m_llen - 16;i<map.m_llen;i++){
+						erofs_err("%d",*(temp+i));
+					}
+				}
 				erofs_err("bcj decode %d,bcjflag = %d,processed %d",map.m_llen,g_sbi.bcj_flag,x);
 			}else if(g_sbi.bcj_flag && map.m_plen == map.m_llen){
 				erofs_err("nocompress %d",map.m_llen);
-				char* temp = buffer;
-				for(int i = 1;i<=8;i++){
-					erofs_err("%d",*(temp+i));
-				}
 			}
 
 			if (ret)
