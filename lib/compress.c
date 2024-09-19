@@ -597,6 +597,8 @@ nocompression:
 			/* TODO: reset clusterofs to 0 if permitted */
 			ret = write_uncompressed_extent(ctx, len, dst);
 			erofs_err("one block nocompression %d",ret);
+			char* temp = dst;
+				erofs_err("%d",*(temp+4096));
 			if (ret < 0)
 				return ret;
 		}
