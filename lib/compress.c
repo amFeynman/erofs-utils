@@ -550,7 +550,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 
 	if(cfg.c_bcj_flag){
 		unsigned int temp_size = e->length;
-		erofs("ctx->head = %d, %d",ctx->head,*(ctx->bcjdata + ctx->head));
+		erofs_err("ctx->head = %d, %d",ctx->head,*(ctx->bcjdata + ctx->head));
 		ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->head,
 				      &temp_size, dst, ctx->pclustersize);
 		if(cfg.c_bcj_flag == 1){//for x86
