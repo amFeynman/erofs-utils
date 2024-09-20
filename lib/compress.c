@@ -661,7 +661,7 @@ frag_packing:
 						&e->length, dst, &compressedsize);
 			}
 			else{
-				tryrecompress_trailing(ctx, h, ctx->queue + ctx->data,
+				tryrecompress_trailing(ctx, h, ctx->queue + ctx->head,
 						&e->length, dst, &compressedsize);
 			}
 		}
