@@ -562,7 +562,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 				      &temp_size, dst, ctx->pclustersize);
 			}
 		}
-		erofs_err("bcj compress %d into %d,len = %d,ctx->remaining = %d",temp_size,ret,len,ctx->remaining);
+		erofs_err("bcj compress %d into %d,len = %d",temp_size,ret,len);
 		e->length = temp_size;
 	}
 	else{
