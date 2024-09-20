@@ -551,7 +551,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 
 	if(cfg.c_bcj_flag){
 		unsigned int temp_size = e->length;
-		ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->bcjdata,
+		ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->bcjhead,
 				      &temp_size, dst, ctx->pclustersize);
 		if(cfg.c_bcj_flag == 1){//for x86
 
@@ -559,7 +559,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 		else if(cfg.c_bcj_flag == 2 || cfg.c_bcj_flag == 3){//arm and arm 64
 			while(temp_size % 4 != 0 && temp_size != e->length){
 				temp_size -= temp_size % 4;
-				ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->bcjdata,
+				ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->bcjhead,
 				      &temp_size, dst, ctx->pclustersize);
 			}
 		}
@@ -657,11 +657,11 @@ frag_packing:
 
 		if (may_inline && len == e->length){
 			if(cfg.c_bcj_flag){
-				tryrecompress_trailing(ctx, h, ctx->bcjdata + ctx->head,
+				tryrecompress_trailing(ctx, h, ctx->bcjdata + ctx->bcjhead,
 						&e->length, dst, &compressedsize);
 			}
 			else{
-				tryrecompress_trailing(ctx, h, ctx->queue + ctx->head,
+				tryrecompress_trailing(ctx, h, ctx->queue + ctx->data,
 						&e->length, dst, &compressedsize);
 			}
 		}
