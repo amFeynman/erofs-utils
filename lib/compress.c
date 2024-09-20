@@ -753,6 +753,7 @@ static int z_erofs_compress_one(struct z_erofs_compress_sctx *ctx)
 
 		if (z_erofs_need_refill(ctx))
 			break;
+		erofs_err("hello,the end of a cycle of zcompressone");
 	}
 	return 0;
 }
