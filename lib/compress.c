@@ -85,7 +85,6 @@ struct z_erofs_compress_sctx {		/* segment context */
 	erofs_off_t memoff;
 
 	u8* bcjdata;
-	unsigned int bcjhead;
 };
 
 #ifdef EROFS_MT_ENABLED
@@ -551,7 +550,8 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 
 	if(cfg.c_bcj_flag){
 		unsigned int temp_size = e->length;
-		ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->bcjhead,
+		erofs("ctx->head = %d, %d",ctx->head,*(ctx->bcjdata + ctx->head));
+		ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->head,
 				      &temp_size, dst, ctx->pclustersize);
 		if(cfg.c_bcj_flag == 1){//for x86
 
@@ -559,7 +559,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 		else if(cfg.c_bcj_flag == 2 || cfg.c_bcj_flag == 3){//arm and arm 64
 			while(temp_size % 4 != 0 && temp_size != e->length){
 				temp_size -= temp_size % 4;
-				ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->bcjhead,
+				ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->head,
 				      &temp_size, dst, ctx->pclustersize);
 			}
 		}
@@ -657,7 +657,7 @@ frag_packing:
 
 		if (may_inline && len == e->length){
 			if(cfg.c_bcj_flag){
-				tryrecompress_trailing(ctx, h, ctx->bcjdata + ctx->bcjhead,
+				tryrecompress_trailing(ctx, h, ctx->bcjdata + ctx->head,
 						&e->length, dst, &compressedsize);
 			}
 			else{
@@ -708,7 +708,6 @@ frag_packing:
 	if (!may_inline && !may_packing && !is_packed_inode)
 		(void)z_erofs_dedupe_insert(e, ctx->queue + ctx->head);
 	ctx->head += e->length;
-	ctx->bcjhead += e->length;
 	return 0;
 
 fix_dedupedfrag:
@@ -1061,7 +1060,6 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
     		}
 			memcpy(ctx->bcjdata,ctx->queue + ctx->tail,rx);
 			bcj_code((uint8_t *)ctx->bcjdata,0,(size_t)rx,cfg.c_bcj_flag,true);
-			ctx->bcjhead = 0;
 			// ret = (offset == -1 ?
 			// 	erofs_bcj_fileread(fd, ctx->bcjdata, rx, -1):
 			// 	erofs_bcj_fileread(fd, ctx->bcjdata, rx,
