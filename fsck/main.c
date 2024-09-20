@@ -522,7 +522,7 @@ static int erofs_verify_inode_data(struct erofs_inode *inode, int outfd)
 						    0, map.m_llen, false);
 			if(g_sbi.bcj_flag && map.m_plen != map.m_llen){
 				bcj_code((uint8_t *)buffer,0,(size_t)map.m_llen,g_sbi.bcj_flag,false);
-				erofs_err("bcj decode %d,bcjflag = %d",map.m_llen,g_sbi.bcj_flag);
+				erofs_err("bcj decode %d,pos = %d,map.m_la = %d",map.m_llen,pos,map.m_la);
 			}else if(g_sbi.bcj_flag && map.m_plen == map.m_llen){
 				erofs_err("nocompress %d",map.m_llen);
 			}
