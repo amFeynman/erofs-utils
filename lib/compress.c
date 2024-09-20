@@ -85,6 +85,7 @@ struct z_erofs_compress_sctx {		/* segment context */
 	erofs_off_t memoff;
 
 	u8* bcjdata;
+	unsigned int bcjhead;
 };
 
 #ifdef EROFS_MT_ENABLED
@@ -550,7 +551,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 
 	if(cfg.c_bcj_flag){
 		unsigned int temp_size = e->length;
-		ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->head,
+		ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->bcjdata,
 				      &temp_size, dst, ctx->pclustersize);
 		if(cfg.c_bcj_flag == 1){//for x86
 
@@ -558,7 +559,7 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 		else if(cfg.c_bcj_flag == 2 || cfg.c_bcj_flag == 3){//arm and arm 64
 			while(temp_size % 4 != 0 && temp_size != e->length){
 				temp_size -= temp_size % 4;
-				ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->head,
+				ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->bcjdata,
 				      &temp_size, dst, ctx->pclustersize);
 			}
 		}
@@ -707,6 +708,7 @@ frag_packing:
 	if (!may_inline && !may_packing && !is_packed_inode)
 		(void)z_erofs_dedupe_insert(e, ctx->queue + ctx->head);
 	ctx->head += e->length;
+	ctx->bcjhead += e->length;
 	return 0;
 
 fix_dedupedfrag:
@@ -753,7 +755,6 @@ static int z_erofs_compress_one(struct z_erofs_compress_sctx *ctx)
 
 		if (z_erofs_need_refill(ctx))
 			break;
-		erofs_err("hello,the end of a cycle of zcompressone");
 	}
 	return 0;
 }
@@ -1060,6 +1061,7 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
     		}
 			memcpy(ctx->bcjdata,ctx->queue + ctx->tail,rx);
 			bcj_code((uint8_t *)ctx->bcjdata,0,(size_t)rx,cfg.c_bcj_flag,true);
+			ctx->bcjhead = 0;
 			// ret = (offset == -1 ?
 			// 	erofs_bcj_fileread(fd, ctx->bcjdata, rx, -1):
 			// 	erofs_bcj_fileread(fd, ctx->bcjdata, rx,
@@ -1073,7 +1075,7 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
 		ctx->tail += rx;
 		if (offset != -1)
 			offset += rx;
-
+		
 		ret = z_erofs_compress_one(ctx);
 		free(ctx->bcjdata);
 		ctx->bcjdata = NULL;
