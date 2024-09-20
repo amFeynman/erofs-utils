@@ -556,13 +556,13 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 
 		}
 		else if(cfg.c_bcj_flag == 2 || cfg.c_bcj_flag == 3){//arm and arm 64
-			if(temp_size % 4 != 0 && temp_size != e->length){
+			while(temp_size % 4 != 0 && temp_size != e->length){
 				temp_size -= temp_size % 4;
 				ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->head,
 				      &temp_size, dst, ctx->pclustersize);
 			}
 		}
-		erofs_err("bcj compress %d into %d,len = %d",temp_size,ret,len);
+		erofs_err("bcj compress %d into %d,len = %d,ctx->remaining = %d",temp_size,ret,len,ctx->remaining);
 		e->length = temp_size;
 	}
 	else{

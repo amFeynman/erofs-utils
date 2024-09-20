@@ -5,10 +5,10 @@ cd ../../
 source 0.build_src.sh
 # mkfs.erofs -zlzma  arm64_lzma_4k.img ./aarch64_elf_bin/
 # mkfs.erofs -zlzma  --bcj=arm64 arm64_bcj_lzma_4k.img ./aarch64_elf_bin/
-mkfs.erofs -zlzma --bcj=arm64 arm64_bcj_lzma_4k_test.img ./arm64test/
-fsck.erofs --extract=out arm64_bcj_lzma_4k_test.img
-ls -l arm64test/
-md5sum arm64test/*
+mkfs.erofs -zlzma --bcj=arm64 arm64_bcj_lzma_4k.img ./aarch64_elf_bin/
+fsck.erofs --extract=out arm64_bcj_lzma_4k.img
+ls -l aarch64_elf_bin/
+md5sum aarch64_elf_bin/*
 ls -l out/
 md5sum out/*
 rm -rf out
