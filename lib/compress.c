@@ -560,13 +560,6 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 				temp_size -= temp_size % 4;
 				ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->head,
 				      &temp_size, dst, ctx->pclustersize);
-
-				if(temp_size == 7440){
-					char* temp = ctx->bcjdata + ctx->head;
-					for(int i = temp_size - 16;i<temp_size;i++){
-						erofs_err("%d",*(temp+i));
-					}
-				}
 			}
 		}
 		erofs_err("bcj compress %d into %d,len = %d",temp_size,ret,len);
