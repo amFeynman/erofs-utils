@@ -550,7 +550,6 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 
 	if(cfg.c_bcj_flag){
 		unsigned int temp_size = e->length;
-		erofs_err("ctx->head = %d, %d",ctx->head,*(ctx->bcjdata + ctx->head));
 		ret = erofs_compress_destsize(h, ctx->bcjdata + ctx->head,
 				      &temp_size, dst, ctx->pclustersize);
 		if(cfg.c_bcj_flag == 1){//for x86
@@ -563,7 +562,6 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 				      &temp_size, dst, ctx->pclustersize);
 			}
 		}
-		erofs_err("bcj compress %d into %d,len = %d",temp_size,ret,len);
 		e->length = temp_size;
 	}
 	else{
@@ -587,7 +585,6 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 		if (may_inline && len < blksz) {
 			ret = z_erofs_fill_inline_data(inode,
 					ctx->queue + ctx->head, len, true);
-			erofs_err("nocempression inline processing %d",ret);
 			if (ret < 0)
 				return ret;
 			e->inlined = true;
@@ -597,7 +594,6 @@ static int __z_erofs_compress_one(struct z_erofs_compress_sctx *ctx,
 nocompression:
 			/* TODO: reset clusterofs to 0 if permitted */
 			ret = write_uncompressed_extent(ctx, len, dst);
-			erofs_err("one block nocompression %d",ret);
 			if (ret < 0)
 				return ret;
 		}
@@ -616,7 +612,6 @@ nocompression:
 frag_packing:
 		ret = z_erofs_pack_fragments(inode, ctx->queue + ctx->head,
 					     len, ictx->tof_chksum);
-		erofs_err("erofs frag_packing len = %d,ret = %d",len,ret);
 		if (ret < 0)
 			return ret;
 		e->compressedblks = 0; /* indicate a fragment */
@@ -711,7 +706,6 @@ frag_packing:
 	return 0;
 
 fix_dedupedfrag:
-	erofs_err("fix_dedupedfrag");
 	DBG_BUGON(!inode->fragment_size);
 	ctx->remaining += inode->fragment_size;
 	ictx->fix_dedupedfrag = true;
@@ -1060,10 +1054,6 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
     		}
 			memcpy(ctx->bcjdata,ctx->queue + ctx->tail,rx);
 			bcj_code((uint8_t *)ctx->bcjdata,0,(size_t)rx,cfg.c_bcj_flag,true);
-			// ret = (offset == -1 ?
-			// 	erofs_bcj_fileread(fd, ctx->bcjdata, rx, -1):
-			// 	erofs_bcj_fileread(fd, ctx->bcjdata, rx,
-			//  		ictx->fpos + offset));
 		}
 
 		if (ret != rx)
@@ -1075,8 +1065,10 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
 			offset += rx;
 		
 		ret = z_erofs_compress_one(ctx);
-		free(ctx->bcjdata);
-		ctx->bcjdata = NULL;
+		if(cfg.c_bcj_flag){
+			free(ctx->bcjdata);
+			ctx->bcjdata = NULL;
+		}
 		if (ret)
 			return ret;
 	}
