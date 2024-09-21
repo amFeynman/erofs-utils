@@ -1056,6 +1056,7 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
     		}
 			memcpy(ctx->bcjdata,ctx->queue,rx + ctx->tail);
 			bcj_code((uint8_t *)ctx->bcjdata,filepos,(size_t)(rx + ctx->tail),cfg.c_bcj_flag,true);
+			erofs_err("filepos = %d,ctx->head = %d,ctx->tail = %d,ctx->remaining = %d,ret = %d",filepos,ctx->head,ctx->tail,ctx->remaining,ret);
 		}
 
 		if (ret != rx)
