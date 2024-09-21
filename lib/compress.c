@@ -1047,7 +1047,7 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
 				ictx->fpos + offset));
 
 		if(cfg.c_bcj_flag){
-			ctx->bcjdata = (u8 *)malloc(rx);
+			ctx->bcjdata = (u8 *)malloc(rx + ctx->tail);
 			if (ctx->bcjdata == NULL) {
         		erofs_err("bcjread malloc failed");
         		return -errno;
