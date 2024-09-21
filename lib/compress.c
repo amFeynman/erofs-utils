@@ -1052,8 +1052,8 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
         		erofs_err("bcjread malloc failed");
         		return -errno;
     		}
-			memcpy(ctx->bcjdata,ctx->queue + ctx->tail,rx);
-			bcj_code((uint8_t *)ctx->bcjdata,0,(size_t)rx,cfg.c_bcj_flag,true);
+			memcpy(ctx->bcjdata,ctx->queue,rx + ctx->tail);
+			bcj_code((uint8_t *)ctx->bcjdata,0,(size_t)(rx + ctx->tail),cfg.c_bcj_flag,true);
 		}
 
 		if (ret != rx)
