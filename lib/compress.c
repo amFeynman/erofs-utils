@@ -85,6 +85,7 @@ struct z_erofs_compress_sctx {		/* segment context */
 	erofs_off_t memoff;
 
 	u8* bcjdata;
+	uint32_t filepos;
 };
 
 #ifdef EROFS_MT_ENABLED
@@ -262,6 +263,7 @@ static bool z_erofs_need_refill(struct z_erofs_compress_sctx *ctx)
 	memmove(ctx->queue, ctx->queue + qh_aligned, ctx->tail - qh_aligned);
 	ctx->tail -= qh_aligned;
 	ctx->head = qh_after;
+	ctx->filepos += qh_aligned;
 	return true;
 }
 
@@ -1037,7 +1039,7 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
 	int fd = ictx->fd;
 
 	ctx->blkaddr = blkaddr;
-	uint32_t filepos = 0;
+	ctx->filepos  = 0;
 	while (ctx->remaining) {
 		const u64 rx = min_t(u64, ctx->remaining,
 				     Z_EROFS_COMPR_QUEUE_SZ - ctx->tail);
@@ -1048,15 +1050,14 @@ int z_erofs_compress_segment(struct z_erofs_compress_sctx *ctx,
 				ictx->fpos + offset));
 
 		if(cfg.c_bcj_flag){
-			filepos += ctx->tail;
 			ctx->bcjdata = (u8 *)malloc(rx + ctx->tail);
 			if (ctx->bcjdata == NULL) {
         		erofs_err("bcjread malloc failed");
         		return -errno;
     		}
 			memcpy(ctx->bcjdata,ctx->queue,rx + ctx->tail);
-			bcj_code((uint8_t *)ctx->bcjdata,filepos,(size_t)(rx + ctx->tail),cfg.c_bcj_flag,true);
-			erofs_err("filepos = %d,ctx->head = %d,ctx->tail = %d,ctx->remaining = %d,ret = %d",filepos,ctx->head,ctx->tail,ctx->remaining,ret);
+			bcj_code((uint8_t *)ctx->bcjdata,ctx->filepos,(size_t)(rx + ctx->tail),cfg.c_bcj_flag,true);
+			erofs_err("filepos = %d,ctx->head = %d,ctx->tail = %d,ctx->remaining = %d,ret = %d",ctx->filepos,ctx->head,ctx->tail,ctx->remaining,ret);
 		}
 
 		if (ret != rx)
